@@ -1,4 +1,4 @@
-package com.davinchicoder.spring_boot_web_cero_a_experto;
+package com.davinchicoder.spring_boot_web_cero_a_experto.product.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
