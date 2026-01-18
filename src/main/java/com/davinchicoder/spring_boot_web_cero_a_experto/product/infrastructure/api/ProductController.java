@@ -2,6 +2,10 @@ package com.davinchicoder.spring_boot_web_cero_a_experto.product.infrastructure.
 
 import com.davinchicoder.spring_boot_web_cero_a_experto.common.mediator.Mediator;
 import com.davinchicoder.spring_boot_web_cero_a_experto.product.application.command.create.CreateProductRequest;
+import com.davinchicoder.spring_boot_web_cero_a_experto.product.application.command.delete.DeleteProductRequest;
+import com.davinchicoder.spring_boot_web_cero_a_experto.product.application.command.update.UpdateProductRequest;
+import com.davinchicoder.spring_boot_web_cero_a_experto.product.application.query.getAll.GetAllProductRequest;
+import com.davinchicoder.spring_boot_web_cero_a_experto.product.application.query.getAll.GetAllProductResponse;
 import com.davinchicoder.spring_boot_web_cero_a_experto.product.application.query.getById.GetProductByIdRequest;
 import com.davinchicoder.spring_boot_web_cero_a_experto.product.application.query.getById.GetProductByIdResponse;
 import com.davinchicoder.spring_boot_web_cero_a_experto.product.infrastructure.api.dto.ProductDto;
@@ -29,7 +33,12 @@ public class ProductController implements ProductApi {
     @GetMapping("")
     public ResponseEntity<List<ProductDto>> getAllProducts(@RequestParam(required = false
     ) String pageSize) {
-        return ResponseEntity.ok(null);
+
+        GetAllProductResponse response = mediator.dispatch(new GetAllProductRequest());
+
+        List<ProductDto> productDtos = response.getProducts().stream().map(productMapper::mapToProduct).toList();
+
+        return ResponseEntity.ok(productDtos);
     }
 
     @GetMapping("/{id}")
@@ -51,11 +60,19 @@ public class ProductController implements ProductApi {
 
     @PutMapping
     public ResponseEntity<Void> updateProduct(@RequestBody ProductDto productDto) {
+
+        UpdateProductRequest request = productMapper.mapToUpdateProductRequest(productDto);
+
+        mediator.dispatch(request);
+
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+
+        mediator.dispatch(new DeleteProductRequest(id));
+
         return ResponseEntity.noContent().build();
     }
 }
